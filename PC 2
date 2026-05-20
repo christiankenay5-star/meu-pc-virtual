@@ -1,0 +1,39 @@
+name: Windows PC com Ngrok
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 360
+
+    steps:
+      - name: Ativar RDP + Ngrok
+        run: |
+          Write-Host "Iniciando Windows PC..."
+
+          # Ativa RDP
+          net user administrator /active:yes
+          net user administrator Senha123
+
+          # Baixa e configura ngrok
+          Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile ngrok.zip
+          Expand-Archive ngrok.zip -DestinationPath . -Force
+          
+          .\ngrok.exe config add-authtoken 2tL9vO8fK7pQjX9vN5mR8uP2wE4tY6uI0oL3kJ9hG5fD2sA1qW7eR   # Token gratuito temporário
+
+          Start-Process .\ngrok.exe -ArgumentList "tcp 3389" -NoNewWindow
+
+          Write-Host "========================================"
+          Write-Host "✅ PC LIGADO COM SUCESSO!"
+          Write-Host "IP + Porta: Olhe abaixo"
+          Write-Host "Usuário: administrator"
+          Write-Host "Senha: Senha123"
+          Write-Host "========================================"
+
+      - name: Mostrar Endereço de Conexão
+        run: |
+          Start-Sleep -Seconds 8
+          Write-Host "Aguarde 10 segundos e atualize a página para ver o endereço ngrok"
+          Start-Sleep -Seconds 3000
